@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Your Download — Oh Mi</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d0d0d;color:#f2ede2;font-family:'DM Sans',system-ui,sans-serif;padding:1rem;box-sizing:border-box}
+.box{max-width:460px;width:100%;text-align:center;border:1px solid rgba(201,168,76,.35);border-radius:10px;padding:2.2rem 1.5rem;background:#161616}
+h1{font-weight:400;font-size:1.6rem;margin:.2rem 0 .6rem}
+p{color:#bdb6a6;line-height:1.5;margin:.5rem 0}
+.song{color:#C9A84C;font-size:1.25rem;margin:1rem 0 1.4rem}
+a.btn{display:inline-block;background:#C9A84C;color:#111;text-decoration:none;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;padding:.9rem 1.8rem;border-radius:4px}
+small{display:block;margin-top:1.4rem;color:#8c8678}
+a.home{color:#C9A84C}
+</style></head><body>
+<div class="box" id="box"><p>Confirming your payment…</p></div>
+<script>
+// After deploying the Worker, put its address here (e.g. https://ohmi-downloads.YOURNAME.workers.dev)
+var API = "https://ohmi-downloads.ohmiproductions-ss.workers.dev";
+var sid = new URLSearchParams(location.search).get("session_id");
+var box = document.getElementById("box");
+function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML;}
+function fail(){box.innerHTML='<h1>We couldn\'t confirm your payment</h1><p>If you just paid, wait a moment and refresh. Still stuck? Email ohmiproductions.ss@gmail.com with your receipt and we\'ll send your song.</p><p><a class="home" href="/">Back to the site</a></p>';}
+if(!sid){fail();}else{
+  fetch(API+"/session?session_id="+encodeURIComponent(sid)).then(function(r){return r.json();}).then(function(d){
+    if(!d.ok){fail();return;}
+    box.innerHTML='<h1>Thank you!</h1><p>Your payment went through.</p><div class="song">'+esc(d.name)+'</div>'+
+      '<a class="btn" href="'+API+'/file?session_id='+encodeURIComponent(sid)+'">Download MP3</a>'+
+      '<small>Save the file somewhere safe. This page works for up to 5 downloads, so bookmark it in case you need it again.</small>'+
+      '<p><a class="home" href="/">Back to Oh Mi</a></p>';
+  }).catch(fail);
+}
+</script></body></html>
